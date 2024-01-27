@@ -5,6 +5,7 @@ import {
 import { createSupabaseServer } from '@/utils/supabase.server';
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/cloudflare';
 import { Outlet, useLoaderData } from '@remix-run/react';
+import { createBrowserClient } from '@supabase/ssr';
 import { Clapperboard, Home, Newspaper } from 'lucide-react';
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -13,11 +14,17 @@ export async function loader({ request }: LoaderFunctionArgs) {
     data: { session },
   } = await supabase.auth.getSession();
 
-  return session ? json({ session }) : redirect('/signin');
+  const env = {
+    SUPABASE_URL: process.env.SUPABASE_URL!,
+    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY!,
+  };
+
+  return session ? json({ session, env }) : redirect('/signin');
 }
 
 export default function HomeLayout() {
-  const { session } = useLoaderData<typeof loader>() || {};
+  const { session, env } = useLoaderData<typeof loader>() || {};
+  const supabase = createBrowserClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
 
   const links: SidebarLinkProps[] = [
     { name: 'Home', href: '/home', icon: Home },
@@ -40,7 +47,7 @@ export default function HomeLayout() {
         </nav>
       </aside>
 
-      <Outlet context={{ session }} />
+      <Outlet context={{ session, supabase }} />
     </main>
   );
 }

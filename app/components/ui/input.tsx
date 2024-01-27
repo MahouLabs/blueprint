@@ -21,4 +21,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 );
 Input.displayName = 'Input';
 
-export { Input };
+const ErrorMessage = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, children, ...props }, ref) => {
+    return (
+      <p className={cn('text-red-500', className)} {...props}>
+        {children}
+      </p>
+    );
+  },
+);
+
+export { Input, ErrorMessage };

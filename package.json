@@ -13,7 +13,8 @@
     "lint:fix": "biome lint . --apply",
     "format": "biome format --write .",
     "ui:add": "bunx shadcn-ui@latest add",
-    "ui:diff": "bunx shadcn-ui@latest diff"
+    "ui:diff": "bunx shadcn-ui@latest diff",
+    "supabase": "supabase"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",

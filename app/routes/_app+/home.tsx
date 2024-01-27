@@ -8,7 +8,13 @@ import {
   json,
   redirect,
 } from '@remix-run/cloudflare';
-import { Form, useLoaderData, useNavigation } from '@remix-run/react';
+import {
+  Form,
+  useLoaderData,
+  useNavigation,
+  useOutletContext,
+  useRevalidator,
+} from '@remix-run/react';
 import { getValidatedFormData, useRemixForm } from 'remix-hook-form';
 import * as z from 'zod';
 
@@ -57,7 +63,9 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Home() {
   const { email, bookmarks } = useLoaderData<typeof loader>();
+  const { supabase } = useOutletContext(); // TODO: find out how to make this typesafe
   const navigation = useNavigation();
+  const { revalidate } = useRevalidator();
 
   const {
     handleSubmit,
@@ -68,6 +76,11 @@ export default function Home() {
     mode: 'onSubmit',
     resolver,
   });
+
+  const handleSignout = async () => {
+    await supabase.auth.signOut();
+    revalidate();
+  };
 
   return (
     <div className="w-full h-screen flex items-center flex-col gap-2 justify-center">
@@ -89,6 +102,8 @@ export default function Home() {
           {navigation.state === 'submitting' ? 'Adding...' : 'Add new URL'}
         </Button>
       </Form>
+
+      <Button onClick={handleSignout}>Signout</Button>
     </div>
   );
 }

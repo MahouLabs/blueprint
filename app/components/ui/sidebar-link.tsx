@@ -12,7 +12,7 @@ export function SidebarLink({ name, href, ...props }: SidebarLinkProps) {
   const { pathname } = useLocation();
 
   return (
-    <li>
+    <li key={name}>
       <Link
         to={href}
         className={cn(

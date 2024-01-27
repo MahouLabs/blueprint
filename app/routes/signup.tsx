@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { ErrorMessage, Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { getUserSession } from '@/utils/supabase.server';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,9 +11,12 @@ import { useRemixForm } from 'remix-hook-form';
 import { z } from 'zod';
 
 const authSchema = z.object({
+  name: z.string().min(1),
   email: z.string().email(),
   password: z.string().min(8),
+  confirmPassword: z.string().min(8),
 });
+// TODO: refine to make sure that password and confirmPassword are equal
 
 type FormData = z.infer<typeof authSchema>;
 const resolver = zodResolver(authSchema);
@@ -29,11 +32,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return session ? redirect('/home') : json({ env });
 }
 
-// export async function clientAction({}: ClientActionFunctionArgs) {}
-
-export default function Signin() {
-  // const navigation = useNavigation();
-  const [loading, setLoading] = useState(false); // TODO: remove this state in favor of remix hooks
+export default function Signup() {
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { env } = useLoaderData<typeof loader>();
   const supabase = createBrowserClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
@@ -49,12 +49,12 @@ export default function Signin() {
   });
 
   // TODO: only enter this method if form is properly validated
-  const handleSignin = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     const { email, password } = getValues();
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
@@ -64,24 +64,35 @@ export default function Signin() {
   };
 
   return (
-    <div className="w-full h-screen flex items-center justify-center">
-      <Form onSubmit={handleSignin} className="flex flex-col gap-4 w-fit border p-10 border-border rounded-lg">
+    <div className="w-full h-screen flex items-center justify-center border ">
+      <Form onSubmit={handleSignup} className="flex flex-col gap-4 w-fit">
+        <Label>
+          Name:
+          <Input type="string" {...register('name')} />
+          {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
+        </Label>
         <Label>
           Email:
           <Input type="email" {...register('email')} />
-          {errors.email && <p>{errors.email.message}</p>}
+          {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
         </Label>
         <Label>
           Password:
           <Input type="password" {...register('password')} />
-          {errors.password && <p>{errors.password.message}</p>}
+          {errors.password && (
+            <ErrorMessage>{errors.password.message}</ErrorMessage>
+          )}
+        </Label>
+        <Label>
+          Confirm Password:
+          <Input type="password" {...register('confirmPassword')} />
+          {errors.confirmPassword && (
+            <ErrorMessage>{errors.confirmPassword.message}</ErrorMessage>
+          )}
         </Label>
         <Button disabled={loading} type="submit">
-          {loading ? 'Signing in...' : 'Sign in'}
+          {loading ? 'Signing up...' : 'Sign up'}
         </Button>
-        {/* <Button disabled={navigation.state === 'submitting'} type="submit">
-          {navigation.state === 'submitting' ? 'Signing in...' : 'Sign in'}
-        </Button> */}
       </Form>
     </div>
   );
