@@ -8,7 +8,7 @@ import {
   LoaderFunctionArgs,
   json,
   redirect,
-} from '@remix-run/node';
+} from '@remix-run/cloudflare';
 import { Form, useActionData, useNavigation } from '@remix-run/react';
 import { getValidatedFormData, useRemixForm } from 'remix-hook-form';
 import { z } from 'zod';

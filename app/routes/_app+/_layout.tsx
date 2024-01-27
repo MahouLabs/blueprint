@@ -3,7 +3,7 @@ import {
   type SidebarLinkProps,
 } from '@/components/ui/sidebar-link';
 import { createSupabaseServer } from '@/utils/supabase.server';
-import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
+import { LoaderFunctionArgs, json, redirect } from '@remix-run/cloudflare';
 import { Outlet, useLoaderData } from '@remix-run/react';
 import { Clapperboard, Home, Newspaper } from 'lucide-react';
 

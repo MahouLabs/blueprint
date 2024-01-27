@@ -1,7 +1,7 @@
 import { Header } from '@/components/header';
 import { type SidebarLinkProps } from '@/components/ui/sidebar-link';
 import { getUserSession } from '@/utils/supabase.server';
-import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
+import { LoaderFunctionArgs, json, redirect } from '@remix-run/cloudflare';
 import { Outlet, useLoaderData } from '@remix-run/react';
 import { Clapperboard, Home, Newspaper } from 'lucide-react';
 

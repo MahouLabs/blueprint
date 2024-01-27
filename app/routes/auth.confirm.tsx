@@ -1,4 +1,4 @@
-import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { type LoaderFunctionArgs, redirect } from '@remix-run/cloudflare';
 import { createServerClient, parse, serialize } from '@supabase/ssr';
 import { type EmailOtpType } from '@supabase/supabase-js';
 
