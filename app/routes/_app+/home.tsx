@@ -34,7 +34,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (!session) return redirect('/signin');
 
   const { data: bookmarks } = await supabase.from('bookmarks').select('url');
-  return json({ email: session.user.email, bookmarks: bookmarks || [] });
+  return json(
+    { email: session.user.email, bookmarks: bookmarks || [] },
+    { headers: { 'Cache-Control': 'max-age=6400, s-maxage=86400' } },
+  );
 }
 
 export async function action({ request }: ActionFunctionArgs) {
