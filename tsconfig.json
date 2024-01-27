@@ -10,15 +10,15 @@
     "resolveJsonModule": true,
     "target": "ES2022",
     "strict": true,
-    "noImplicitAny": true,
     "allowJs": true,
+    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./app/*"],
+      "~/*": ["./app/*"]
     },
-    "skipLibCheck": true,
-    "allowImportingTsExtensions": true,
+
+    // Vite takes care of building everything, not tsc.
     "noEmit": true
   }
 }

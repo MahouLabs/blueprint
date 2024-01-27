@@ -1,5 +1,3 @@
-import { Toaster } from './components/ui/sonner';
-import './tailwind.css';
 import {
   Links,
   LiveReload,
@@ -18,12 +16,11 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body suppressHydrationWarning>
+      <body>
         <Outlet />
         <ScrollRestoration />
-        <LiveReload />
         <Scripts />
-        <Toaster />
+        <LiveReload />
       </body>
     </html>
   );
