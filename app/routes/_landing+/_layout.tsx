@@ -22,7 +22,7 @@ export default function HomeLayout() {
   return (
     <>
       <Header isSignedIn={Boolean(session)} />
-      <main className='px-4 py-6'>
+      <main className="px-4 py-6">
         <Outlet context={{ session }} />
       </main>
     </>

@@ -5,7 +5,7 @@ import {
 import { createSupabaseServer } from '@/utils/supabase.server';
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
-import { Home, Newspaper, Clapperboard } from 'lucide-react';
+import { Clapperboard, Home, Newspaper } from 'lucide-react';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const supabase = await createSupabaseServer(request);
