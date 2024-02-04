@@ -7,7 +7,7 @@ import {
   LoaderFunctionArgs,
   json,
   redirect,
-} from '@remix-run/cloudflare';
+} from '@remix-run/node';
 import {
   Form,
   useLoaderData,

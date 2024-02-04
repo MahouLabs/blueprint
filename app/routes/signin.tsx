@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { getUserSession } from '@/utils/supabase.server';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LoaderFunctionArgs, json, redirect } from '@remix-run/cloudflare';
+import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
 import { Form, useLoaderData, useNavigate } from '@remix-run/react';
 import { createBrowserClient } from '@supabase/ssr';
 import { useState } from 'react';
@@ -65,7 +65,10 @@ export default function Signin() {
 
   return (
     <div className="w-full h-screen flex items-center justify-center">
-      <Form onSubmit={handleSignin} className="flex flex-col gap-4 w-fit border p-10 border-border rounded-lg">
+      <Form
+        onSubmit={handleSignin}
+        className="flex flex-col gap-4 w-fit border p-10 border-border rounded-lg"
+      >
         <Label>
           Email:
           <Input type="email" {...register('email')} />
