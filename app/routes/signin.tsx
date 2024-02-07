@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import getEnvVars from '@/utils/env';
 import { getUserSession } from '@/utils/supabase.server';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
@@ -21,9 +22,14 @@ const resolver = zodResolver(authSchema);
 export async function loader({ request }: LoaderFunctionArgs) {
   const { session } = await getUserSession(request);
 
+  const { SUPABASE_URL, SUPABASE_ANON_KEY } = getEnvVars([
+    'SUPABASE_URL',
+    'SUPABASE_ANON_KEY',
+  ]);
+
   const env = {
-    SUPABASE_URL: process.env.SUPABASE_URL!,
-    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY!,
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
   };
 
   return session ? redirect('/home') : json({ env });
@@ -36,7 +42,10 @@ export default function Signin() {
   const [loading, setLoading] = useState(false); // TODO: remove this state in favor of remix hooks
   const navigate = useNavigate();
   const { env } = useLoaderData<typeof loader>();
-  const supabase = createBrowserClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
+  const supabase = createBrowserClient(
+    env.SUPABASE_URL!,
+    env.SUPABASE_ANON_KEY!,
+  );
 
   const {
     handleSubmit,
