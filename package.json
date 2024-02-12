@@ -21,6 +21,7 @@
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-slot": "^1.0.2",
     "@remix-run/cloudflare": "^2.6.0",
+    "@remix-run/cloudflare-pages": "^2.6.0",
     "@remix-run/react": "^2.6.0",
     "@remix-run/serve": "^2.6.0",
     "@supabase/ssr": "^0.0.10",
