@@ -7,8 +7,14 @@ import {
   LoaderFunctionArgs,
   json,
   redirect,
-} from '@remix-run/node';
-import { Form, useLoaderData, useNavigation } from '@remix-run/react';
+} from '@remix-run/cloudflare';
+import {
+  Form,
+  useLoaderData,
+  useNavigation,
+  useOutletContext,
+  useRevalidator,
+} from '@remix-run/react';
 import { getValidatedFormData, useRemixForm } from 'remix-hook-form';
 import * as z from 'zod';
 
@@ -19,8 +25,8 @@ const bookmarkSchema = z.object({
 type FormData = z.infer<typeof bookmarkSchema>;
 const resolver = zodResolver(bookmarkSchema);
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const supabase = await createSupabaseServer(request);
+export async function loader({ request, context }: LoaderFunctionArgs) {
+  const supabase = await createSupabaseServer(request, context);
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -28,11 +34,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (!session) return redirect('/signin');
 
   const { data: bookmarks } = await supabase.from('bookmarks').select('url');
-  return json({ email: session.user.email, bookmarks: bookmarks || [] });
+  return json(
+    { email: session.user.email, bookmarks: bookmarks || [] },
+    { headers: { 'Cache-Control': 'max-age=6400, s-maxage=86400' } },
+  );
 }
 
-export async function action({ request }: ActionFunctionArgs) {
-  const supabase = await createSupabaseServer(request);
+export async function action({ request, context }: ActionFunctionArgs) {
+  const supabase = await createSupabaseServer(request, context);
   const {
     errors,
     data,
@@ -57,7 +66,9 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Home() {
   const { email, bookmarks } = useLoaderData<typeof loader>();
+  const { supabase } = useOutletContext(); // TODO: find out how to make this typesafe
   const navigation = useNavigation();
+  const { revalidate } = useRevalidator();
 
   const {
     handleSubmit,
@@ -68,6 +79,11 @@ export default function Home() {
     mode: 'onSubmit',
     resolver,
   });
+
+  const handleSignout = async () => {
+    await supabase.auth.signOut();
+    revalidate();
+  };
 
   return (
     <div className="w-full h-screen flex items-center flex-col gap-2 justify-center">
@@ -89,6 +105,8 @@ export default function Home() {
           {navigation.state === 'submitting' ? 'Adding...' : 'Add new URL'}
         </Button>
       </Form>
+
+      <Button onClick={handleSignout}>Signout</Button>
     </div>
   );
 }

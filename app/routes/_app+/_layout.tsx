@@ -2,22 +2,24 @@ import {
   SidebarLink,
   type SidebarLinkProps,
 } from '@/components/ui/sidebar-link';
-import { createSupabaseServer } from '@/utils/supabase.server';
-import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
+import { getUserSession } from '@/utils/supabase.server';
+import { LoaderFunctionArgs, json, redirect } from '@remix-run/cloudflare';
 import { Outlet, useLoaderData } from '@remix-run/react';
+import { createBrowserClient } from '@supabase/ssr';
 import { Clapperboard, Home, Newspaper } from 'lucide-react';
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const supabase = await createSupabaseServer(request);
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+export async function loader({ request, context }: LoaderFunctionArgs) {
+  const session = await getUserSession(request, context);
+  const { SUPABASE_URL, SUPABASE_ANON_KEY } = context.env;
 
-  return session ? json({ session }) : redirect('/signin');
+  return session
+    ? json({ session, env: { SUPABASE_URL, SUPABASE_ANON_KEY } })
+    : redirect('/signin');
 }
 
 export default function HomeLayout() {
-  const { session } = useLoaderData<typeof loader>() || {};
+  const { session, env } = useLoaderData<typeof loader>() || {};
+  const supabase = createBrowserClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
 
   const links: SidebarLinkProps[] = [
     { name: 'Home', href: '/home', icon: Home },
@@ -40,7 +42,7 @@ export default function HomeLayout() {
         </nav>
       </aside>
 
-      <Outlet context={{ session }} />
+      <Outlet context={{ session, supabase }} />
     </main>
   );
 }

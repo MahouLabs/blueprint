@@ -1,8 +1,8 @@
-import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { type LoaderFunctionArgs, redirect } from '@remix-run/cloudflare';
 import { createServerClient, parse, serialize } from '@supabase/ssr';
 import { type EmailOtpType } from '@supabase/supabase-js';
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request, context }: LoaderFunctionArgs) {
   const requestUrl = new URL(request.url);
   const token_hash = requestUrl.searchParams.get('token_hash');
   const type = requestUrl.searchParams.get('type') as EmailOtpType | null;
@@ -12,23 +12,20 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (token_hash && type) {
     const cookies = parse(request.headers.get('Cookie') ?? '');
 
-    const supabase = createServerClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(key) {
-            return cookies[key];
-          },
-          set(key, value, options) {
-            headers.append('Set-Cookie', serialize(key, value, options));
-          },
-          remove(key, options) {
-            headers.append('Set-Cookie', serialize(key, '', options));
-          },
+    const { SUPABASE_URL, SUPABASE_ANON_KEY } = context.env;
+    const supabase = createServerClient(SUPABASE_URL!, SUPABASE_ANON_KEY!, {
+      cookies: {
+        get(key) {
+          return cookies[key];
+        },
+        set(key, value, options) {
+          headers.append('Set-Cookie', serialize(key, value, options));
+        },
+        remove(key, options) {
+          headers.append('Set-Cookie', serialize(key, '', options));
         },
       },
-    );
+    });
 
     const { error } = await supabase.auth.verifyOtp({
       type,
