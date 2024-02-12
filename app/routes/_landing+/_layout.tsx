@@ -1,12 +1,12 @@
 import { Header } from '@/components/header';
 import { type SidebarLinkProps } from '@/components/ui/sidebar-link';
 import { getUserSession } from '@/utils/supabase.server';
-import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
+import { LoaderFunctionArgs, json, redirect } from '@remix-run/cloudflare';
 import { Outlet, useLoaderData } from '@remix-run/react';
 import { Clapperboard, Home, Newspaper } from 'lucide-react';
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { session } = await getUserSession(request);
+export async function loader({ request, context }: LoaderFunctionArgs) {
+  const { session } = await getUserSession(request, context);
   return json({ session });
 }
 

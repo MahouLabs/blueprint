@@ -7,7 +7,7 @@ import {
   LoaderFunctionArgs,
   json,
   redirect,
-} from '@remix-run/node';
+} from '@remix-run/cloudflare';
 import {
   Form,
   useLoaderData,
@@ -25,8 +25,8 @@ const bookmarkSchema = z.object({
 type FormData = z.infer<typeof bookmarkSchema>;
 const resolver = zodResolver(bookmarkSchema);
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const supabase = await createSupabaseServer(request);
+export async function loader({ request, context }: LoaderFunctionArgs) {
+  const supabase = await createSupabaseServer(request, context);
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -40,8 +40,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   );
 }
 
-export async function action({ request }: ActionFunctionArgs) {
-  const supabase = await createSupabaseServer(request);
+export async function action({ request, context }: ActionFunctionArgs) {
+  const supabase = await createSupabaseServer(request, context);
   const {
     errors,
     data,

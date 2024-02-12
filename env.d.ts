@@ -1,8 +1,15 @@
-/// <reference types="@remix-run/node" />
-/// <reference types="vite/client" />
+import 'vite/client';
+import '@remix-run/cloudflare';
+import '@cloudflare/workers-types';
 
-interface ImportMetaEnv {
-  readonly VITE_SUPABASE_URL: string;
-  readonly VITE_SUPABASE_ANON_KEY: string;
-  // more env variables...
+interface Env {
+	ENVIRONMENT?: 'development';
+	SUPABASE_URL: string;
+  SUPABASE_ANON_KEY: string;
+}
+
+declare module '@remix-run/cloudflare' {
+	export interface AppLoadContext {
+		env: Env;
+	}
 }

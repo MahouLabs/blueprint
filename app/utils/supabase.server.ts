@@ -1,14 +1,13 @@
+import { AppLoadContext } from '@remix-run/cloudflare';
 import { createServerClient, parse, serialize } from '@supabase/ssr';
-import getEnvVars from './env';
 
-export async function createSupabaseServer(request: Request) {
+export async function createSupabaseServer(
+  request: Request,
+  context: AppLoadContext,
+) {
   const cookies = parse(request.headers.get('Cookie') ?? '');
   const headers = new Headers();
-
-  const { SUPABASE_URL, SUPABASE_ANON_KEY } = getEnvVars([
-    'SUPABASE_URL',
-    'SUPABASE_ANON_KEY',
-  ]);
+  const { SUPABASE_URL, SUPABASE_ANON_KEY } = context.env;
 
   const supabase = createServerClient(SUPABASE_URL!, SUPABASE_ANON_KEY!, {
     cookies: {
@@ -27,8 +26,11 @@ export async function createSupabaseServer(request: Request) {
   return supabase;
 }
 
-export async function getUserSession(request: Request) {
-  const supabase = await createSupabaseServer(request);
+export async function getUserSession(
+  request: Request,
+  context: AppLoadContext,
+) {
+  const supabase = await createSupabaseServer(request, context);
   const {
     data: { session },
     error,

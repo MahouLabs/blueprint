@@ -1,10 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import getEnvVars from '@/utils/env';
 import { getUserSession } from '@/utils/supabase.server';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
+import { LoaderFunctionArgs, json, redirect } from '@remix-run/cloudflare';
 import { Form, useLoaderData, useNavigate } from '@remix-run/react';
 import { createBrowserClient } from '@supabase/ssr';
 import { useState } from 'react';
@@ -19,13 +18,9 @@ const authSchema = z.object({
 type FormData = z.infer<typeof authSchema>;
 const resolver = zodResolver(authSchema);
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { session } = await getUserSession(request);
-
-  const { SUPABASE_URL, SUPABASE_ANON_KEY } = getEnvVars([
-    'SUPABASE_URL',
-    'SUPABASE_ANON_KEY',
-  ]);
+export async function loader({ request, context }: LoaderFunctionArgs) {
+  const { session } = await getUserSession(request, context);
+  const { SUPABASE_URL, SUPABASE_ANON_KEY } = context.env;
 
   const env = {
     SUPABASE_URL,
@@ -34,8 +29,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   return session ? redirect('/home') : json({ env });
 }
-
-// export async function clientAction({}: ClientActionFunctionArgs) {}
 
 export default function Signin() {
   // const navigation = useNavigation();
