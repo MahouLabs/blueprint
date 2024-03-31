@@ -1,22 +1,28 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.4.1/schema.json",
+	"$schema": "https://biomejs.dev/schemas/1.6.2/schema.json",
 	"organizeImports": {
-		"enabled": true,
-		"include": ["**/*.ts"]
+		"enabled": true
 	},
 	"linter": {
 		"enabled": true,
 		"rules": {
 			"recommended": true,
-			"style": {
-				"noNonNullAssertion": "off"
+			"nursery": {
+				"useSortedClasses": {
+					"level": "warn",
+					"options": {
+						"attributes": ["classList"],
+						"functions": ["clsx", "cva", "tw"]
+					}
+				}
 			}
 		}
 	},
 	"javascript": {
 		"formatter": {
-			"quoteStyle": "single",
-			"indentStyle": "space"
+			"indentStyle": "space",
+			"indentWidth": 2,
+			"trailingComma": "es5"
 		}
 	}
 }

@@ -1,93 +1,93 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { getUserSession } from '@/utils/supabase.server';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { LoaderFunctionArgs, json, redirect } from '@remix-run/cloudflare';
-import { Form, useLoaderData, useNavigate } from '@remix-run/react';
-import { createBrowserClient } from '@supabase/ssr';
-import { useState } from 'react';
-import { useRemixForm } from 'remix-hook-form';
-import { z } from 'zod';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import { Label } from "@/components/ui/label";
+import { H2 } from "@/components/ui/typography";
+import { type LoaderFunctionArgs, json } from "@remix-run/cloudflare";
+import { useLoaderData, useNavigate } from "@remix-run/react";
+import { createBrowserClient } from "@supabase/ssr";
+import { useState } from "react";
+import { toast } from "sonner";
 
-const authSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-});
-
-type FormData = z.infer<typeof authSchema>;
-const resolver = zodResolver(authSchema);
-
-export async function loader({ request, context }: LoaderFunctionArgs) {
-  const { session } = await getUserSession(request, context);
-  const { SUPABASE_URL, SUPABASE_ANON_KEY } = context.env;
-
-  const env = {
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY,
-  };
-
-  return session ? redirect('/home') : json({ env });
+export async function loader({ context }: LoaderFunctionArgs) {
+  const { SUPABASE_URL, SUPABASE_KEY } = context.cloudflare.env;
+  return json({ SUPABASE_URL, SUPABASE_KEY });
 }
 
 export default function Signin() {
-  // const navigation = useNavigation();
-  const [loading, setLoading] = useState(false); // TODO: remove this state in favor of remix hooks
+  const { SUPABASE_URL, SUPABASE_KEY } = useLoaderData<typeof loader>();
+  const [email, setEmail] = useState("");
+  const [mode, setMode] = useState<"email" | "otp">("email");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { env } = useLoaderData<typeof loader>();
-  const supabase = createBrowserClient(
-    env.SUPABASE_URL!,
-    env.SUPABASE_ANON_KEY!,
-  );
+  const supabase = createBrowserClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const {
-    handleSubmit,
-    formState: { errors },
-    register,
-    getValues,
-  } = useRemixForm<FormData>({
-    mode: 'onSubmit',
-    resolver,
-  });
-
-  // TODO: only enter this method if form is properly validated
-  const handleSignin = async (e: React.FormEvent) => {
+  const signin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    const { email, password } = getValues();
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithOtp({ email });
+    if (!error) {
+      toast("OTP code sent to your email");
+      setMode("otp");
+    } else {
+      toast("Failed to send OTP code, please try again later");
+    }
+
+    setLoading(false);
+  };
+
+  const verifyOtp = async (token: string) => {
+    const { error } = await supabase.auth.verifyOtp({
       email,
-      password,
+      token,
+      type: "email",
     });
 
-    if (error) setLoading(false); // TODO: handle error if it happens
-    if (!error) navigate('/home');
+    if (!error) navigate("/dashboard");
   };
 
   return (
-    <div className="w-full h-screen flex items-center justify-center">
-      <Form
-        onSubmit={handleSignin}
-        className="flex flex-col gap-4 w-fit border p-10 border-border rounded-lg"
-      >
-        <Label>
-          Email:
-          <Input type="email" {...register('email')} />
-          {errors.email && <p>{errors.email.message}</p>}
-        </Label>
-        <Label>
-          Password:
-          <Input type="password" {...register('password')} />
-          {errors.password && <p>{errors.password.message}</p>}
-        </Label>
-        <Button disabled={loading} type="submit">
-          {loading ? 'Signing in...' : 'Sign in'}
-        </Button>
-        {/* <Button disabled={navigation.state === 'submitting'} type="submit">
-          {navigation.state === 'submitting' ? 'Signing in...' : 'Sign in'}
-        </Button> */}
-      </Form>
+    <div className="-translate-x-1/2 -translate-y-1/2 fixed top-1/2 left-1/2 mx-auto flex w-full max-w-[354px] flex-col gap-4">
+      {mode === "email" && (
+        <form onSubmit={signin}>
+          <Label htmlFor="email">Email</Label>
+          <Input
+            type="email"
+            id="email"
+            placeholder="you@domain.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Button className="mt-2 w-full" type="submit" disabled={loading}>
+            {loading ? "Sending..." : "Send OTP code"}
+          </Button>
+        </form>
+      )}
+
+      {mode === "otp" && (
+        <>
+          <H2>Input your OTP code here</H2>
+          <InputOTP maxLength={6} onComplete={verifyOtp}>
+            <InputOTPGroup>
+              <InputOTPSlot index={0} />
+              <InputOTPSlot index={1} />
+              <InputOTPSlot index={2} />
+            </InputOTPGroup>
+            <InputOTPSeparator />
+            <InputOTPGroup>
+              <InputOTPSlot index={3} />
+              <InputOTPSlot index={4} />
+              <InputOTPSlot index={5} />
+            </InputOTPGroup>
+          </InputOTP>
+        </>
+      )}
     </div>
   );
 }

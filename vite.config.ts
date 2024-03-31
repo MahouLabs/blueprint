@@ -1,22 +1,16 @@
 import {
-  unstable_cloudflarePreset as cloudflare,
-  unstable_vitePlugin as remix,
-} from '@remix-run/dev';
-import { defineConfig } from 'vite';
-import tsconfigPaths from 'vite-tsconfig-paths';
-
-import { remixDevTools } from 'remix-development-tools/vite';
-import remixConfig from './remix.config';
+  cloudflareDevProxyVitePlugin as remixCloudflareDevProxy,
+  vitePlugin as remix,
+} from "@remix-run/dev";
+import { remixDevTools } from "remix-development-tools";
+import { defineConfig } from "vite";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [
+    remixCloudflareDevProxy(),
     remixDevTools(),
-    remix({ ...remixConfig, presets: [cloudflare()] }),
+    remix(),
     tsconfigPaths(),
   ],
-  ssr: {
-    resolve: {
-      externalConditions: ['workerd', 'worker'],
-    },
-  },
 });
