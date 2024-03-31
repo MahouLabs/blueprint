@@ -1,58 +1,48 @@
-# remix-vite-template
+# Welcome to Remix + Vite!
 
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+📖 See the [Remix docs](https://remix.run/docs) and the [Remix Vite docs](https://remix.run/docs/en/main/future/vite) for details on supported features.
 
-[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
+## Typegen
 
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
+Generate types for your Cloudflare bindings in `wrangler.toml`:
 
-Includes the following configuration:
+```sh
+npm run typegen
+```
 
-- Remix v2.4
-- Vite v5 (Remix unstable support)
-- BiomeJS
-- ESlint
-- React 18.3 canary version to prevent hydration issues
-- Tailwind CSS
-- `remix-flat-routes` with _hybrid_ routing
-- Vitest with unit testing and Remix routes test (`createRemixStub`)
-- Playwright E2E testing
-- Fly.io
-- GitHub Action for deployments
-- Remix Dev Tools
+You will need to rerun typegen whenever you make changes to `wrangler.toml`.
 
-Portions of the setup were borrowed from [Epic Stack](https://github.com/epicweb-dev/epic-stack)
+## Development
 
-See the [`docs`](./docs) folder on usage and setup information.
+Run the Vite dev server:
 
-## Contributors 😍
+```sh
+npm run dev
+```
 
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+To run Wrangler:
 
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- markdownlint-disable -->
-<table>
-  <tbody>
-    <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://kiliman.dev/"><img src="https://avatars.githubusercontent.com/u/47168?v=4?s=100" width="100px;" alt="Michael Carter"/><br /><sub><b>Michael Carter</b></sub></a><br /><a href="https://github.com/kiliman/remix-vite-template/commits?author=kiliman" title="Code">💻</a> <a href="https://github.com/kiliman/remix-vite-template/commits?author=kiliman" title="Documentation">📖</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/HubbardJacob"><img src="https://avatars.githubusercontent.com/u/48691238?v=4?s=100" width="100px;" alt="Jacob Hubbard"/><br /><sub><b>Jacob Hubbard</b></sub></a><br /><a href="https://github.com/kiliman/remix-vite-template/commits?author=HubbardJacob" title="Code">💻</a> <a href="https://github.com/kiliman/remix-vite-template/commits?author=HubbardJacob" title="Documentation">📖</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/AlemTuzlak"><img src="https://avatars.githubusercontent.com/u/18480956?v=4?s=100" width="100px;" alt="Alem Tuzlak"/><br /><sub><b>Alem Tuzlak</b></sub></a><br /><a href="https://github.com/kiliman/remix-vite-template/commits?author=AlemTuzlak" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/OnurGvnc"><img src="https://avatars.githubusercontent.com/u/1294640?v=4?s=100" width="100px;" alt="Onur Guvenc"/><br /><sub><b>Onur Guvenc</b></sub></a><br /><a href="https://github.com/kiliman/remix-vite-template/commits?author=OnurGvnc" title="Code">💻</a></td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr>
-      <td align="center" size="13px" colspan="7">
-        <img src="https://raw.githubusercontent.com/all-contributors/all-contributors-cli/1b8533af435da9854653492b1327a23a4dbd0a10/assets/logo-small.svg">
-          <a href="https://all-contributors.js.org/docs/en/bot/usage">Add your contributions</a>
-        </img>
-      </td>
-    </tr>
-  </tfoot>
-</table>
+```sh
+npm run build
+npm run start
+```
 
-<!-- markdownlint-restore -->
+## Deployment
 
-<!-- ALL-CONTRIBUTORS-LIST:END -->
+> [!WARNING]  
+> Cloudflare does _not_ use `wrangler.toml` to configure deployment bindings.
+> You **MUST** [configure deployment bindings manually in the Cloudflare dashboard][bindings].
 
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+First, build your app for production:
+
+```sh
+npm run build
+```
+
+Then, deploy your app to Cloudflare Pages:
+
+```sh
+npm run deploy
+```
+
+[bindings]: https://developers.cloudflare.com/pages/functions/bindings/
