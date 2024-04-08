@@ -1,4 +1,3 @@
-import { H1 } from "@/components/ui/typography";
 import { createClient } from "@/utils/supabase.server";
 import { type LoaderFunctionArgs, json, redirect } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
@@ -22,9 +21,9 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col gap-2">
-      <H1>
+      <h1>
         Welcome, <b>{userEmail}</b>
-      </H1>
+      </h1>
     </div>
   );
 }

@@ -2,28 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  box-sizing: border-box;
-  position: relative;
-  min-width: 0;
-}
-
-body {
-  font-family: 'Inter', sans-serif;
-  min-height: 100dvh;
-}
-
-h1,
-h2,
-h3,
-h4 {
-  text-wrap: balance;
-}
-
-p {
-  text-wrap: pretty;
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -90,10 +68,48 @@ p {
 
 @layer base {
   * {
+    box-sizing: border-box;
+    position: relative;
+    min-width: 0;
     @apply border-border;
   }
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  h1 {
+    @apply scroll-m-20 font-extrabold text-4xl tracking-tight lg:text-5xl text-balance;
+  }
+
+  h2 {
+    @apply scroll-m-20 border-b pb-2 font-semibold text-3xl tracking-tight first:mt-0 text-balance;
+  }
+
+  h3 {
+    @apply scroll-m-20 font-semibold text-2xl tracking-tight text-balance;
+  }
+
+  h4 {
+    @apply scroll-m-20 font-semibold text-xl tracking-tight text-balance;
+  }
+
+  p {
+    @apply leading-7 text-pretty;
+  }
+
+  blockquote {
+    @apply mt-6 border-l-2 pl-6 italic;
+  }
+
+  code {
+    @apply relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono font-semibold text-sm;
+  }
+}
+
+@layer base {
+  body {
+    font-family: "Inter", sans-serif;
+    min-height: 100dvh;
   }
 }
