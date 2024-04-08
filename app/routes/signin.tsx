@@ -7,7 +7,6 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
-import { H2 } from "@/components/ui/typography";
 import { type LoaderFunctionArgs, json } from "@remix-run/cloudflare";
 import { useLoaderData, useNavigate } from "@remix-run/react";
 import { createBrowserClient } from "@supabase/ssr";
@@ -72,7 +71,7 @@ export default function Signin() {
 
       {mode === "otp" && (
         <>
-          <H2>Input your OTP code here</H2>
+          <h2>Input your OTP code here</h2>
           <InputOTP maxLength={6} onComplete={verifyOtp}>
             <InputOTPGroup>
               <InputOTPSlot index={0} />
